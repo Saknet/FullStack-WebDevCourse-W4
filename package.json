@@ -1,0 +1,30 @@
+{
+  "name": "fullstack-webdevcourse-w4",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Saknet/FullStack-WebDevCourse-W4.git"
+  },
+  "author": "Andreas Andra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Saknet/FullStack-WebDevCourse-W4/issues"
+  },
+  "homepage": "https://github.com/Saknet/FullStack-WebDevCourse-W4#readme",
+  "devDependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "mongoose": "^5.0.4",
+    "nodemon": "^1.14.12"
+  },
+  "dependencies": {
+    "dotenv": "^5.0.0",
+    "morgan": "^1.9.0"
+  }
+}
