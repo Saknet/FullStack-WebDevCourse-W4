@@ -2,7 +2,8 @@ const supertest = require('supertest')
 const {app, server} = require('../index')
 const api = supertest(app)
 const Blog = require('../models/blog')
-const { format, initialBlogs, nonExistingId, blogsInDb } = require('./test_helper')
+const User = require('../models/user')
+const { format, initialBlogs, nonExistingId, blogsInDb, usersInDb } = require('./test_helper')
 
 describe('addition of a new blog', async () => {
 
@@ -223,6 +224,101 @@ describe('deletion of a blog', async () => {
       expect(titles).not.toContain(addedBlog.title)
       expect(blogsAfterOperation.length).toBe(blogsAtStart.length - 1)
     })
+  })
+
+  describe.only('when there is initially one user at db', async () => {
+    beforeAll(async () => {
+      await User.remove({})
+      const user = new User({ username: 'root', password: 'sekret' })
+      await user.save()
+    })
+  
+    test('POST /api/users succeeds with a fresh username', async () => {
+      const usersBeforeOperation = await usersInDb()
+  
+      const newUser = {
+        username: 'mluukkai',
+        name: 'Matti Luukkainen',
+        password: 'salainen',
+        adult: true
+      }
+  
+      await api
+        .post('/api/users')
+        .send(newUser)
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+  
+      const usersAfterOperation = await usersInDb()
+      expect(usersAfterOperation.length).toBe(usersBeforeOperation.length+1)
+      const usernames = usersAfterOperation.map(u => u.username)
+      expect(usernames).toContain(newUser.username)
+    })
+
+    test('POST /api/users fails with too short password', async () => {
+        const usersBeforeOperation = await usersInDb()
+    
+        const newUser = {
+          username: 'test user',
+          name: 'Matti Luukkainen',
+          password: 'sa',
+          adult: true
+        }
+    
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+    
+        const usersAfterOperation = await usersInDb()
+        expect(usersAfterOperation.length).toBe(usersBeforeOperation.length)
+        const usernames = usersAfterOperation.map(u => u.username)
+        expect(usernames).not.toContain(newUser.username)
+      })
+
+      test('POST /api/users fails with non unique username', async () => {
+        const usersBeforeOperation = await usersInDb()
+    
+        const newUser = {
+          username: 'root',
+          name: 'uusinimi',
+          password: 'sala',
+          adult: true
+        }
+    
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(400)
+          .expect('Content-Type', /application\/json/)
+    
+        const usersAfterOperation = await usersInDb()
+        expect(usersAfterOperation.length).toBe(usersBeforeOperation.length)
+        const names = usersAfterOperation.map(u => u.name)
+        expect(names).not.toContain(newUser.name)
+      })  
+
+      test('POST /api/users set adult to true if adult is missing', async () => {
+        const usersBeforeOperation = await usersInDb()
+    
+        const newUser = {
+          username: 'alaikainen',
+          name: 'name12321',
+          password: 'sala'
+        }
+    
+        await api
+          .post('/api/users')
+          .send(newUser)
+          .expect(200)
+          .expect('Content-Type', /application\/json/)
+    
+        const usersAfterOperation = await usersInDb()
+        expect(usersAfterOperation.length).toBe(usersBeforeOperation.length + 1)
+        const adults = usersAfterOperation.map(r => r.adult)
+        expect(adults[adults.length - 1]).toBe(true)  
+      })
   })
 
 afterAll(() => {

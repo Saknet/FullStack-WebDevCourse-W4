@@ -28,7 +28,9 @@
     "supertest": "^3.0.0"
   },
   "dependencies": {
+    "bcrypt": "^1.0.3",
     "dotenv": "^5.0.0",
+    "jsonwebtoken": "^8.1.1",
     "morgan": "^1.9.0"
   }
 }

@@ -1,8 +1,11 @@
 POST http://localhost:3001/api/blogs 
 content-type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3R1c2VyMSIsImlkIjoiNWE4MWVlZDFhOWIxZDIxODVjOGE2NzFkIiwiaWF0IjoxNTE4NTM4ODY3fQ.ansAO8otzwcaP8lJ3iVPr0PaMdpc3tWgH2r802aLDXs
 
-{   "title": "test blog4", 
-    "author": "test name4", 
-    "url": "test url4", 
-    "likes": "666" }
+{   "title": "test 45", 
+    "author": "toimiikoviel", 
+    "url": "url6", 
+    "likes": "442",
+    "userId": "5a81eec2a9b1d2185c8a671c"
+}
 
