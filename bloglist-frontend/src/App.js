@@ -1,9 +1,9 @@
 import React from 'react'
 import Blog from './components/Blog'
-import ShowBlog from './components/ShowBlog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
+import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import './index.css'
@@ -18,10 +18,10 @@ class App extends React.Component {
       newAuthor: '',
       newTitle: '',
       newUrl: '',
+      likes: '',
       username: '',
       password: '',
-      user: null,
-      currentBlog: null
+      user: null
     }
   }
 
@@ -129,19 +129,58 @@ class App extends React.Component {
       this.setState({ newUrl: event.target.value })
     }
   }
-  
-  setCurrentBlog = (blog) => () => {
-    if (Object.keys(blog).length === 5) {
-      blog['user'] = null
-    }
 
-    this.setState({ currentBlog: blog })
+  updateBlog = (blog) => {
+    return () => {
+      blogService
+      .update(blog.id, { 
+        author: blog.author,
+        title: blog.title,
+        url: blog.url,
+        likes: blog.likes + 1,
+        user: blog.user
+      })
+      .then(updatedBlog => {
+        this.setState({ 
+          blogs: this.state.blogs.map(b => b.id !== blog.id ? b : updatedBlog ),
+          success: `${blog.title} succesfully liked`
+        })
+        setTimeout(() => {
+          this.setState({ success: null })
+        }, 5000)
+      })
+      .catch(error => {
+        this.setState({
+          error: 'something went wrong',
+        })
+        setTimeout(() => {
+          this.setState({ error: null })
+        }, 5000)
+      })
+    } 
   }
 
+  removeBlog = (blog) => {
+    return () => {
+        const c = window.confirm("delete " + blog.title + " by " + blog.author)
+        if (c) {
+            blogService
+            .remove(blog.id)
+            .then(
+                this.setState({ 
+                    blogs: this.state.blogs.filter(b => b.id !== blog.id),
+                    success: `Blog '${blog.title}' by ' ${blog.author} was successfully deleted`
+                })                )
+            setTimeout(() => {
+                this.setState({success: null})
+            }, 5000)
+        }
+    }
+}
+  
   render() {
-    
     const allBlogs = () => (
-      this.state.blogs.map(blog =><Blog key = {blog._id} blog = {blog} showBlog = {this.setCurrentBlog(blog)}/>)
+      this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog =><Blog key = {blog.id} blog = {blog} blogUpdate = {this.updateBlog} blogDelete = {this.removeBlog} currentUser = {this.state.user}/>)
     )
 
     const loginForm = () => (
@@ -156,39 +195,16 @@ class App extends React.Component {
       </Togglable>
     )
     const blogForm = () => (
-      <div>
-        <h2>Luo uusi blogi</h2>
-        <form onSubmit = {this.addBlog}>
-        <div>
-          title
-          <input
-            type = "text"
-            name = "title"
-            value = {this.state.newTitle}
-            onChange = {this.handleNewBlogFieldChange}
-          />
-        </div>
-        <div>
-          author
-          <input
-            type = "text"
-            name = "author"
-            value = {this.state.newAuthor}
-            onChange = {this.handleNewBlogFieldChange}
-          />
-        </div>
-        <div>
-          url
-          <input            
-            type = "text"
-            name = "url"
-            value = {this.state.newUrl}
-            onChange = {this.handleNewBlogFieldChange}
-          />
-        </div>
-          <button type = "submit">create</button>
-        </form>
-      </div>
+      <Togglable buttonLabel = "create new blog">
+        <BlogForm
+          visible = {this.state.visible}
+          title = {this.state.newTitle}
+          author = {this.state.newAuthor}
+          url = {this.state.newUrl}
+          handleChange = {this.handleNewBlogFieldChange}
+          handleSubmit = {this.addBlog}
+        />
+      </Togglable>
     )
   
     return (
@@ -204,15 +220,10 @@ class App extends React.Component {
             <button onClick = {this.logout}> logout</button>
             {blogForm()}
           </div>
-        }
-        {this.state.currentBlog === null ?
-          allBlogs() :
-          <div>
-          <ShowBlog blogToShow = {this.state.currentBlog}> 
-            {allBlogs()}
-          </ShowBlog>
-        </div>           
-        }
+        } 
+
+        {allBlogs()}       
+        
       </div>
     )
   }
