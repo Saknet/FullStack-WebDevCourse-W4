@@ -29,7 +29,7 @@ render() {
   } 
 
   const Blog = () => (
-    <div>
+    <div className = "info">
       {this.props.blog.title} {this.props.blog.author}
     </div>  
   )
@@ -57,13 +57,13 @@ render() {
         <div>
           {this.props.blog.title} {this.props.blog.author}
         </div>
-        <div>
+        <div className = "url">
           {this.props.blog.url}
         </div>
-        <div>
+        <div className = "likes">
           {this.props.blog.likes} likes <button onClick = {this.props.blogUpdate(this.props.blog)}>like</button>
         </div>
-        <div>
+        <div className = "user">
           added by {usersname}
         </div>
         {this.checkForDelete() ?
