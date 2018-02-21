@@ -219,10 +219,11 @@ class App extends React.Component {
             <p>{this.state.user.name} logged in</p>
             <button onClick = {this.logout}> logout</button>
             {blogForm()}
+            <div>
+              {allBlogs()}   
+            </div>
           </div>
-        } 
-
-        {allBlogs()}       
+        }     
         
       </div>
     )

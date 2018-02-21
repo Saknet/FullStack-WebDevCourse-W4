@@ -49,7 +49,7 @@ render() {
   }
 
   return (
-    <div style = {blogStyle}>
+    <div className = "blog" style = {blogStyle}>
       <div style = {hideWhenVisible} onClick = {this.toggleVisibility}>
       {Blog()}
       </div>
