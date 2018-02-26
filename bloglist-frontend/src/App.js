@@ -1,12 +1,28 @@
 import React from 'react'
-import Blog from './components/Blog'
 import blogService from './services/blogs'
+import userService from './services/users'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
+import Users from './views/Users'
+import Blogs from './views/Blogs'
 import './index.css'
+
+const Menu = ({ user, login, logout }) => (
+  <div>
+    <Link to = "/blogs">blogs</Link>&nbsp;
+    <Link to = "/users">users</Link>&nbsp;
+    {user === null ?
+          'Please use the form below to login'  :
+          <div>
+            {user.name} logged in <button onClick= {logout}>logout</button>
+          </div>
+    }
+  </div>
+)
 
 class App extends React.Component {
   constructor(props) {
@@ -15,13 +31,14 @@ class App extends React.Component {
       blogs: [],
       error: null,
       success: null,
+      username: '',
+      password: '',
       newAuthor: '',
       newTitle: '',
       newUrl: '',
       likes: '',
-      username: '',
-      password: '',
-      user: null
+      user: null,
+      users: []
     }
   }
 
@@ -32,12 +49,43 @@ class App extends React.Component {
         this.setState({ blogs })
       })
 
+      userService
+      .getAll()
+      .then(users => {
+        this.setState({ users })
+    })
+
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
       this.setState({ user })
       blogService.setToken(user.token)
-    }    
+    }
+    
+  }
+
+  login = async (event) => {
+    event.preventDefault()
+    try {
+      const user = await loginService.login({
+        username: this.state.username,
+        password: this.state.password
+      })
+
+      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
+      blogService.setToken(user.token)
+      this.setState({ username: '', password: '', success: `${user.username} succesfully logged in`, user })
+      setTimeout(() => {
+        this.setState({ success: null })
+      }, 5000)
+    } catch (exception) {
+      this.setState({
+        error: 'wrong username or password',
+      })
+      setTimeout(() => {
+        this.setState({ error: null })
+      }, 5000)
+    }
   }
 
   addBlog = async (event) => {
@@ -69,29 +117,6 @@ class App extends React.Component {
     }
   }
 
-  login = async (event) => {
-    event.preventDefault()
-    try {
-      const user = await loginService.login({
-        username: this.state.username,
-        password: this.state.password
-      })
-
-      window.localStorage.setItem('loggedBlogappUser', JSON.stringify(user))
-      blogService.setToken(user.token)
-      this.setState({ username: '', password: '', success: `${user.username} succesfully logged in`, user })
-      setTimeout(() => {
-        this.setState({ success: null })
-      }, 5000)
-    } catch (exception) {
-      this.setState({
-        error: 'wrong username or password',
-      })
-      setTimeout(() => {
-        this.setState({ error: null })
-      }, 5000)
-    }
-  }
 
   logout = async (event) => {
     event.preventDefault()
@@ -111,15 +136,6 @@ class App extends React.Component {
     }
   }
 
-
-  handleLoginFieldChange = (event) => {
-    if (event.target.name === 'password') {
-      this.setState({ password: event.target.value })
-    } else if (event.target.name === 'username') {
-      this.setState({ username: event.target.value })
-    }
-  }
-
   handleNewBlogFieldChange = (event) => {
     if (event.target.name === 'title') {
       this.setState({ newTitle: event.target.value })
@@ -130,57 +146,27 @@ class App extends React.Component {
     }
   }
 
-  updateBlog = (blog) => {
-    return () => {
-      blogService
-      .update(blog.id, { 
-        author: blog.author,
-        title: blog.title,
-        url: blog.url,
-        likes: blog.likes + 1,
-        user: blog.user
-      })
-      .then(updatedBlog => {
-        this.setState({ 
-          blogs: this.state.blogs.map(b => b.id !== blog.id ? b : updatedBlog ),
-          success: `${blog.title} succesfully liked`
-        })
-        setTimeout(() => {
-          this.setState({ success: null })
-        }, 5000)
-      })
-      .catch(error => {
-        this.setState({
-          error: 'something went wrong',
-        })
-        setTimeout(() => {
-          this.setState({ error: null })
-        }, 5000)
-      })
-    } 
-  }
-
-  removeBlog = (blog) => {
-    return () => {
-        const c = window.confirm("delete " + blog.title + " by " + blog.author)
-        if (c) {
-            blogService
-            .remove(blog.id)
-            .then(
-                this.setState({ 
-                    blogs: this.state.blogs.filter(b => b.id !== blog.id),
-                    success: `Blog '${blog.title}' by ' ${blog.author} was successfully deleted`
-                })                )
-            setTimeout(() => {
-                this.setState({success: null})
-            }, 5000)
-        }
+  handleLoginFieldChange = (event) => {
+    if (event.target.name === 'password') {
+      this.setState({ password: event.target.value })
+    } else if (event.target.name === 'username') {
+      this.setState({ username: event.target.value })
     }
-}
+  }
   
-  render() {
-    const allBlogs = () => (
-      this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog =><Blog key = {blog.id} blog = {blog} blogUpdate = {this.updateBlog} blogDelete = {this.removeBlog} currentUser = {this.state.user}/>)
+  render() {  
+
+    const blogForm = () => (
+      <Togglable buttonLabel = "create new blog">
+        <BlogForm
+          visible = {this.state.visible}
+          title = {this.state.newTitle}
+          author = {this.state.newAuthor}
+          url = {this.state.newUrl}
+          handleChange = {this.handleNewBlogFieldChange}
+          handleSubmit = {this.addBlog}
+        />
+      </Togglable>
     )
 
     const loginForm = () => (
@@ -194,36 +180,25 @@ class App extends React.Component {
         />
       </Togglable>
     )
-    const blogForm = () => (
-      <Togglable buttonLabel = "create new blog">
-        <BlogForm
-          visible = {this.state.visible}
-          title = {this.state.newTitle}
-          author = {this.state.newAuthor}
-          url = {this.state.newUrl}
-          handleChange = {this.handleNewBlogFieldChange}
-          handleSubmit = {this.addBlog}
-        />
-      </Togglable>
-    )
-  
+
     return (
       <div>
-        <h2>blogs</h2>
 
-        <Notification error = {this.state.error} success = {this.state.success}/>
-
-        {this.state.user === null ?
-          loginForm() :
+        <h1>blog app</h1>
+        
+        <Router>
           <div>
-            <p>{this.state.user.name} logged in</p>
-            <button onClick = {this.logout}> logout</button>
-            {blogForm()}
-            <div>
-              {allBlogs()}   
-            </div>
+            <Notification error = {this.state.error} success = {this.state.success}/>
+            <Menu user = {this.state.user} logout = {this.logout} />
+            {this.state.user === null ?
+              loginForm() :
+              blogForm()
+            }   
+        
+            <Route exact path = "/blogs" render = {() => <Blogs /> }  />
+            <Route exact path = "/users" render = {() => <Users /> }  />
           </div>
-        }     
+        </Router>  
         
       </div>
     )

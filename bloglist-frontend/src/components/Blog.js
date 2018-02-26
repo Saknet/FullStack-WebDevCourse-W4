@@ -76,5 +76,4 @@ render() {
 }
 }
 
-
 export default Blog
