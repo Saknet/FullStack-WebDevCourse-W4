@@ -1,4 +1,5 @@
 import React from 'react'
+import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
 
 class Blog extends React.Component {
   constructor(props) {

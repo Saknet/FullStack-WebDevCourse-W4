@@ -1,11 +1,12 @@
 import React from 'react'
-import Blog from '../components/Blog'
+import Blog from '../components/Blog2'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 import LoginForm from '../components/LoginForm'
 import BlogForm from '../components/BlogForm'
 import Togglable from '../components/Togglable'
 import '../index.css'
+import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
 
 class Blogs extends React.Component {
   constructor(props) {
@@ -169,17 +170,21 @@ class Blogs extends React.Component {
                 this.setState({ 
                     blogs: this.state.blogs.filter(b => b.id !== blog.id),
                     success: `Blog '${blog.title}' by ' ${blog.author} was successfully deleted`
-                })                )
+                }))
+            window.location.reload()  //jotta delete toimisi 7.4 jälkeen
             setTimeout(() => {
                 this.setState({success: null})
             }, 5000)
         }
     }
 }
+
+  blogById = (id) =>
+    this.state.blogs.find(b => b.id === id)
   
   render() {
     const allBlogs = () => (
-      this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog => <Blog key = {blog.id} blog = {blog} blogUpdate = {this.updateBlog} blogDelete = {this.removeBlog} currentUser = {this.state.user}/>)
+      this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog => <Blog.SingleBlog key = {blog.id} blog = {blog}/>)
     )
 
     const blogForm = () => (
@@ -213,16 +218,22 @@ class Blogs extends React.Component {
 
         {this.state.user === null ?
           loginForm() :
+          <Router>
           <div>
-            <p>{this.state.user.name} logged in</p>
-            <button onClick = {this.logout}> logout</button>
             {blogForm()}
-            <div>
-              {allBlogs()}   
-            </div>
+            {allBlogs()} 
+            <Route exact path = "/blogs/:id" render = {({match}) => 
+            <Blog.Blogview 
+              key = {match.params.id} 
+              blog = {this.blogById(match.params.id)} 
+              blogUpdate = {this.updateBlog} 
+              blogDelete = {this.removeBlog} 
+              currentUser = {this.state.user} />} />
+ 
           </div>
+          </Router>
         }  
-        
+
       </div>
     )
   }

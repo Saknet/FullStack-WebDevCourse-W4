@@ -20,7 +20,7 @@ class Users extends React.Component {
   }
 
   userById = (id) =>
-    this.state.users.find(u => u.id === id)
+    this.state.users.find(a => a.id === id)
 
   render() {
     return(
