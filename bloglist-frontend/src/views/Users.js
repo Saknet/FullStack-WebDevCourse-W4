@@ -2,6 +2,7 @@ import React from 'react'
 import User from '../components/User'
 import userService from '../services/users'
 import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
+import { Container, Table } from 'semantic-ui-react'
 
 class Users extends React.Component {
   constructor() {
@@ -24,7 +25,7 @@ class Users extends React.Component {
 
   render() {
     return(
-      <div>
+      <Container>
         <h2>Users</h2>
         
         <Router>
@@ -33,23 +34,23 @@ class Users extends React.Component {
 
           <p>Näkymään päästään klikkaamalla nimeä kaikkien käyttäjien näkymästä</p>
           
-          <table>
-            <tbody>
-              <tr>
+          <Table striped celled>
+            <Table.Body>
+              <Table.Row>
                 <th></th> 
                 <th>blogs added</th>
-              </tr>
-              <tr>
-                <td>{this.state.users.map(user => <User.Username key = {user.id} user = {user} />)} </td>
-                <td>{this.state.users.map(user => <User.UsersBlogs key = {user.id} blogs = {user.blogs.length} />)} </td>
-              </tr>
-            </tbody>
-          </table>
+              </Table.Row>
+              <Table.Row>
+                <Table.Cell>{this.state.users.map(user => <User.Username key = {user.id} user = {user} />)} </Table.Cell>
+                <Table.Cell>{this.state.users.map(user => <User.UsersBlogs key = {user.id} blogs = {user.blogs.length} />)} </Table.Cell>
+              </Table.Row>
+              </Table.Body>
+          </Table>
         </div>
 
         </Router>
 
-      </div>  
+      </Container>  
     )
 
   }

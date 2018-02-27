@@ -1,8 +1,9 @@
 import React from 'react'
-import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Link } from 'react-router-dom'
 import CommentForm from './CommentForm'
 import blogService from '../services/blogs'
 import Notification from './Notification'
+import { Container, Button, Message } from 'semantic-ui-react'
 
 const SingleBlog = ({ blog }) => {
     return (
@@ -14,8 +15,8 @@ const SingleBlog = ({ blog }) => {
   
   const Comment = ({ content }) => {
     return (
-        <div>
-            <li>{content}</li>
+        <div className = "ui bulleted list">
+            <div className = "item">{content}</div>
         </div>
   )}
 
@@ -123,7 +124,7 @@ const SingleBlog = ({ blog }) => {
     render() {
       const deleteButton = () => (
         <div>
-          <button onClick = {this.removeBlog(this.state.blog)}>delete</button>
+          <Button onClick = {this.removeBlog(this.state.blog)}>delete</Button>
         </div>   
       )
 
@@ -132,8 +133,17 @@ const SingleBlog = ({ blog }) => {
         usersname = this.state.blog.user.name
       }
       return (
-        <div>
-          <Notification error = {this.state.error} success = {this.state.success}/>
+        <Container>
+            {(this.state.success &&
+              <Message success>
+                {this.state.success}
+              </Message>
+            )}
+            {(this.state.error &&
+              <Message warning>
+                {this.state.error}
+              </Message>
+            )}
           <div>
             <h1>{this.state.blog.title} {this.state.blog.author} </h1>
           </div>
@@ -141,7 +151,7 @@ const SingleBlog = ({ blog }) => {
             {this.state.blog.url}
           </div>
           <div>
-            {this.state.blog.likes} likes <button onClick = {this.updateBlog()}>like</button>
+            {this.state.blog.likes} likes <Button onClick = {this.updateBlog()}>like</Button>
           </div>
           <div>
             added by {usersname}
@@ -160,7 +170,7 @@ const SingleBlog = ({ blog }) => {
           handleChange = {this.handleNewCommentFieldChange}
           handleSubmit = {this.addComment}
         />
-        </div>
+        </Container>
       )  
     }
   }  

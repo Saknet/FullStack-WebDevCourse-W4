@@ -14,8 +14,8 @@ const Userview = ({ user }) => {
 
 const Blog = ({ blog }) => {
     return (
-        <div>
-            <li>{blog.title} by {blog.author}</li>
+        <div className = "ui bulleted list">
+            <div className = "item">{blog.title} by {blog.author}</div>
         </div>
     )
 }

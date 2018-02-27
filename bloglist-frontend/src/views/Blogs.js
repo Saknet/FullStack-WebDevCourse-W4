@@ -7,6 +7,7 @@ import BlogForm from '../components/BlogForm'
 import Togglable from '../components/Togglable'
 import '../index.css'
 import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
+import { Container } from 'semantic-ui-react'
 
 class Blogs extends React.Component {
   constructor(props) {
@@ -213,7 +214,7 @@ class Blogs extends React.Component {
       )
   
     return (
-      <div>
+      <Container>
         <h2>blog app</h2>
 
         {this.state.user === null ?
@@ -235,7 +236,7 @@ class Blogs extends React.Component {
           </Router>
         }  
 
-      </div>
+      </Container>
     )
   }
 }

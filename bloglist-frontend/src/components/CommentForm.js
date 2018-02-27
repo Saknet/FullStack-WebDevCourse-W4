@@ -1,20 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Form, Button } from 'semantic-ui-react'
 
 const CommentForm = ({ handleSubmit, handleChange, content }) => {
     return (
       <div>
-      <form onSubmit = {handleSubmit}>
-      <div>
-        <input
-          type = "text"
-          name = "content"
-          value = {content}
-          onChange = {handleChange}
-        />
-        <button type = "submit">add comment</button>
-      </div>    
-      </form>
+      <Form onSubmit = {handleSubmit}>
+        <Form.Field>
+          <input
+            type = "text"
+            name = "content"
+            value = {content}
+            onChange = {handleChange}
+          />
+        <Button type = "submit">add comment</Button>
+        </Form.Field>    
+      </Form>
     </div>
     )
   }

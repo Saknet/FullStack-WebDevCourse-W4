@@ -1,12 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import { Form, Button } from 'semantic-ui-react'
 
 const BlogForm = ({ handleSubmit, handleChange, title, author, url }) => {
   return (
     <div>
     <h2>Luo uusi blogi</h2>
-    <form onSubmit = {handleSubmit}>
-    <div>
+    <Form onSubmit = {handleSubmit}>
+    <Form.Field>
       title
       <input
         type = "text"
@@ -14,8 +15,8 @@ const BlogForm = ({ handleSubmit, handleChange, title, author, url }) => {
         value = {title}
         onChange = {handleChange}
       />
-    </div>
-    <div>
+    </Form.Field>
+    <Form.Field>
       author
       <input
         type = "text"
@@ -23,8 +24,8 @@ const BlogForm = ({ handleSubmit, handleChange, title, author, url }) => {
         value = {author}
         onChange = {handleChange}
       />
-    </div>
-    <div>
+    </Form.Field>
+    <Form.Field>
       url
       <input            
         type = "text"
@@ -32,9 +33,9 @@ const BlogForm = ({ handleSubmit, handleChange, title, author, url }) => {
         value = {url}
         onChange = {handleChange}
       />
-    </div>
-      <button type = "submit">create</button>
-    </form>
+    </Form.Field>
+      <Button type = "submit">create</Button>
+    </Form>
   </div>
   )
 }

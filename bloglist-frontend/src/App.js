@@ -6,22 +6,29 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
 import Users from './views/Users'
 import Blogs from './views/Blogs'
 import './index.css'
+import { Container, Button, Menu, Message } from 'semantic-ui-react'
 
-const Menu = ({ user, login, logout }) => (
-  <div>
-    <Link to = "/blogs">blogs</Link>&nbsp;
-    <Link to = "/users">users</Link>&nbsp;
+const NavBar = ({ user, login, logout }) => (
+  <Menu inverted>
+    <Menu.Item link> 
+      <Link to = "/blogs">blogs</Link>&nbsp;
+    </Menu.Item>
+    <Menu.Item link> 
+      <Link to = "/users">users</Link>&nbsp;
+    </Menu.Item>
+    <Menu.Item link>
     {user === null ?
           'Please use the form below to login'  :
           <div>
-            {user.name} logged in <button onClick= {logout}>logout</button>
+            {user.name} logged in <Button onClick= {logout}>logout</Button>
           </div>
     }
-  </div>
+    </Menu.Item>
+  </Menu>
 )
 
 class App extends React.Component {
@@ -182,14 +189,25 @@ class App extends React.Component {
     )
 
     return (
-      <div>
+      <Container>
 
         <h1>blog app</h1>
         
         <Router>
           <div>
+            {(this.state.success &&
+              <Message success>
+                {this.state.success}
+              </Message>
+            )}
+            {(this.state.error &&
+              <Message warning>
+                {this.state.error}
+              </Message>
+            )}
+
             <Notification error = {this.state.error} success = {this.state.success}/>
-            <Menu user = {this.state.user} logout = {this.logout} />
+            <NavBar user = {this.state.user} logout = {this.logout} />
             {this.state.user === null ?
               loginForm() :
               blogForm()
@@ -200,7 +218,7 @@ class App extends React.Component {
           </div>
         </Router>  
         
-      </div>
+      </Container>
     )
   }
 }
