@@ -5,9 +5,10 @@ const mongoose = require('mongoose')
     author: String,
     url: String,
     likes: Number,
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    blogcomments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Blogcomment' }]
   })
-  
+
   blogSchema.statics.format = (blog) => {
     return {
       id: blog._id,
@@ -15,7 +16,8 @@ const mongoose = require('mongoose')
       author: blog.author,
       url: blog.url,
       likes: blog.likes,
-      user: blog.user
+      user: blog.user,
+      blogcomments: blog.blogcomments
     }
   }
   

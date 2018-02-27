@@ -222,13 +222,14 @@ class Blogs extends React.Component {
           <div>
             {blogForm()}
             {allBlogs()} 
-            <Route exact path = "/blogs/:id" render = {({match}) => 
-            <Blog.Blogview 
+            <Route exact path = "/blogs/:id"  render = {({match}) => 
+            <Blog.Blog2
               key = {match.params.id} 
               blog = {this.blogById(match.params.id)} 
               blogUpdate = {this.updateBlog} 
               blogDelete = {this.removeBlog} 
-              currentUser = {this.state.user} />} />
+              currentUser = {this.state.user}
+              blogs = {this.state.blogs} />} />
  
           </div>
           </Router>

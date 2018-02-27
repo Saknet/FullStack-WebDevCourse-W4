@@ -1,23 +1,14 @@
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
+const Blogcomment = require('../models/blogcomment')
 const User = require('../models/user')
 const jwt = require('jsonwebtoken')
-
-const formatBlog = (blog) => {
-  return {
-      id: blog._id,
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes,
-      user: blog.user
-  }
-}
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
     .find({})
-    .populate('user', { username: 1, name: 1, adult: 1} )
+    .populate('user', { username: 1, name: 1, adult: 1 })
+    .populate('blogcomments', { content: 1 })
   
   response.json(blogs.map(Blog.format))
 })
@@ -25,9 +16,10 @@ blogsRouter.get('/', async (request, response) => {
 blogsRouter.get('/:id', async (request, response) => {
     try {
       const blog = await Blog.findById(request.params.id)
-  
+        .populate('blogcomments', { content: 1 })
+
       if (blog) {
-        response.json(formatBlog(blog))
+        response.json(Blog.format(blog))
       } else {
         response.status(404).end()
       }
@@ -67,7 +59,8 @@ blogsRouter.post('/', async (request, response) => {
         author: body.author,
         url: body.url,
         likes: body.likes,
-        user: user._id
+        user: user._id,
+        blogcomments: []
       })
 
       if (body.likes === undefined) {
@@ -88,6 +81,28 @@ blogsRouter.post('/', async (request, response) => {
       }
   }
 })  
+
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const body = request.body
+  const blog = await Blog.findById(body.id)      
+
+  try {      
+      const blogcomment = new Blogcomment({
+        content: body.content,
+        blog: blog._id
+      })
+  
+      const savedBlogcomment = await blogcomment.save()
+      blog.blogcomments = blog.blogcomments.concat(savedBlogcomment._id)
+      await blog.save()
+
+      response.json(Blog.format(blog))
+  } catch (exception) {
+      console.log(exception)
+      response.status(500).json({ error: 'something went wrong...' })
+      
+  }
+})
 
 blogsRouter.delete('/:id', async (request, response) => {
     try {
@@ -122,11 +137,14 @@ blogsRouter.put('/:id', async (request, response) => {
             title: body.title,
             author: body.author,
             url: body.url,
-            likes: body.likes
+            likes: body.likes,
+            blogcomments: body.blogcomments
         }
 
         const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-        response.json(formatBlog(updatedBlog))
+          .populate('blogcomments', { content: 1 })
+          
+        response.json(Blog.format(updatedBlog))
     } catch (exception) {
         console.log(exception)
         response.status(400).send({ error: 'malformatted id' })       

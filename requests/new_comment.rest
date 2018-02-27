@@ -1,0 +1,7 @@
+POST http://localhost:3003/api/blogs/5a83217f7a532362c24e3b3c/comments 
+content-type: application/json
+
+{   
+    "content": "trollol", 
+    "id": "5a83217f7a532362c24e3b3c"
+}
