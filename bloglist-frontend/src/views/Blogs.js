@@ -1,5 +1,5 @@
 import React from 'react'
-import Blog from '../components/Blog2'
+import Blog2 from '../components/Blog2'
 import blogService from '../services/blogs'
 import loginService from '../services/login'
 import LoginForm from '../components/LoginForm'
@@ -8,6 +8,7 @@ import Togglable from '../components/Togglable'
 import '../index.css'
 import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
 import { Container } from 'semantic-ui-react'
+// @flow
 
 class Blogs extends React.Component {
   constructor(props) {
@@ -131,62 +132,21 @@ class Blogs extends React.Component {
     }
   }
 
-  updateBlog = (blog) => {
-    return () => {
-      blogService
-      .update(blog.id, { 
-        author: blog.author,
-        title: blog.title,
-        url: blog.url,
-        likes: blog.likes + 1,
-        user: blog.user
-      })
-      .then(updatedBlog => {
-        this.setState({ 
-          blogs: this.state.blogs.map(b => b.id !== blog.id ? b : updatedBlog ),
-          success: `${blog.title} succesfully liked`
-        })
-        setTimeout(() => {
-          this.setState({ success: null })
-        }, 5000)
-      })
-      .catch(error => {
-        this.setState({
-          error: 'something went wrong',
-        })
-        setTimeout(() => {
-          this.setState({ error: null })
-        }, 5000)
-      })
-    } 
-  }
-
-  removeBlog = (blog) => {
-    return () => {
-        const c = window.confirm("delete " + blog.title + " by " + blog.author)
-        if (c) {
-            blogService
-            .remove(blog.id)
-            .then(
-                this.setState({ 
-                    blogs: this.state.blogs.filter(b => b.id !== blog.id),
-                    success: `Blog '${blog.title}' by ' ${blog.author} was successfully deleted`
-                }))
-            window.location.reload()  //jotta delete toimisi 7.4 jälkeen
-            setTimeout(() => {
-                this.setState({success: null})
-            }, 5000)
-        }
-    }
-}
-
   blogById = (id) =>
     this.state.blogs.find(b => b.id === id)
   
   render() {
     const allBlogs = () => (
-      this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog => <Blog.SingleBlog key = {blog.id} blog = {blog}/>)
+      this.state.blogs.sort((a, b) => b.likes - a.likes).map(blog => <SingleBlog key = {blog.id} blog = {blog}/>)
     )
+
+    const SingleBlog = ({ blog }) => {
+      return (
+          <div>
+              <Link to = {`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+          </div>
+      )
+    }
 
     const blogForm = () => (
       <Togglable buttonLabel = "create new blog">
@@ -224,11 +184,9 @@ class Blogs extends React.Component {
             {blogForm()}
             {allBlogs()} 
             <Route exact path = "/blogs/:id"  render = {({match}) => 
-            <Blog.Blog2
+            <Blog2
               key = {match.params.id} 
               blog = {this.blogById(match.params.id)} 
-              blogUpdate = {this.updateBlog} 
-              blogDelete = {this.removeBlog} 
               currentUser = {this.state.user}
               blogs = {this.state.blogs} />} />
  

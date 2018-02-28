@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { Button } from 'semantic-ui-react'
+// @flow
 
 class Togglable extends React.Component {
   constructor(props) {

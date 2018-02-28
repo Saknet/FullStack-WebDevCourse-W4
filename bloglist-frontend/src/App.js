@@ -4,6 +4,8 @@ import userService from './services/users'
 import loginService from './services/login'
 import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
+import Blog2 from './components/Blog2'
+import User from './components/User'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom'
@@ -11,6 +13,7 @@ import Users from './views/Users'
 import Blogs from './views/Blogs'
 import './index.css'
 import { Container, Button, Menu, Message } from 'semantic-ui-react'
+// @flow
 
 const NavBar = ({ user, login, logout }) => (
   <Menu inverted>
@@ -160,8 +163,17 @@ class App extends React.Component {
       this.setState({ username: event.target.value })
     }
   }
+
+  blogById = (id) =>
+    this.state.blogs.find(b => b.id === id)
+
+  userById = (id) =>
+    this.state.users.find(a => a.id === id)
   
   render() {  
+    if (this.state.blogs.length === 0 || this.state.users.length === 0) {
+      return null
+    }
 
     const blogForm = () => (
       <Togglable buttonLabel = "create new blog">
@@ -215,6 +227,13 @@ class App extends React.Component {
         
             <Route exact path = "/blogs" render = {() => <Blogs /> }  />
             <Route exact path = "/users" render = {() => <Users /> }  />
+            <Route exact path = "/users/:id" render = {({match}) => <User.User key = {match.params.id} user = {this.userById(match.params.id)} />} />
+            <Route exact path = "/blogs/:id" render = {({match}) =>             
+            <Blog2
+              key = {match.params.id} 
+              blog = {this.blogById(match.params.id)}  
+              currentUser = {this.state.user}
+              blogs = {this.state.blogs} />} />
           </div>
         </Router>  
         

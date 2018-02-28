@@ -1,16 +1,6 @@
 import React from 'react'
 import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
-
-const Userview = ({ user }) => {
-    return (
-      <div>
-          <h1>{user.name}</h1>
-          <h2>Added blogs</h2>
-
-          {user.blogs.map(blog => <Blog key = {blog._id} blog = {blog} />)}
-
-      </div>
-)}
+// @flow
 
 const Blog = ({ blog }) => {
     return (
@@ -22,16 +12,37 @@ const Blog = ({ blog }) => {
 
 const Username = ({ user }) => {
     return (
-      <div>
-        <Link to = {`/users/${user.id}`}>{user.username}</Link>
-      </div>
-  )}
+        <div>
+            <Link to = {`/users/${user.id}`}>{user.username}</Link>
+        </div>
+    )}
   
-  const UsersBlogs = ({ blogs }) => {
+const UsersBlogs = ({ blogs }) => {
     return (
-      <div>
-        {blogs}
-      </div>
-  )}
+        <div>
+            {blogs}
+        </div>
+    )}
 
-  export default { Userview, Username, UsersBlogs }
+class User extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            user: this.props.user
+        }
+    }
+ 
+  
+    render() {
+        return (
+            <div>
+                <h1>{this.state.user.name}</h1>
+                <h2>Added blogs</h2>
+
+                {this.state.user.blogs.map(blog => <Blog key = {blog._id} blog = {blog} />)}
+            </div>
+        )  
+    }
+}
+
+export default { User, Username, UsersBlogs }

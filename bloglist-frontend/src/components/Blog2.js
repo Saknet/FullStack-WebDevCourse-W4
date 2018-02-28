@@ -4,14 +4,7 @@ import CommentForm from './CommentForm'
 import blogService from '../services/blogs'
 import Notification from './Notification'
 import { Container, Button, Message } from 'semantic-ui-react'
-
-const SingleBlog = ({ blog }) => {
-    return (
-        <div>
-            <Link to = {`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
-        </div>
-    )
-  }
+// @flow
   
   const Comment = ({ content }) => {
     return (
@@ -120,7 +113,6 @@ const SingleBlog = ({ blog }) => {
       }
   }
   
-    
     render() {
       const deleteButton = () => (
         <div>
@@ -175,4 +167,4 @@ const SingleBlog = ({ blog }) => {
     }
   }  
   
-export default { SingleBlog, Blog2}
+  export default Blog2;

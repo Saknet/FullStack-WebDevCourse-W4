@@ -1,4 +1,5 @@
 import React from 'react'
+// @flow
 
 class Blog extends React.Component {
   constructor(props) {

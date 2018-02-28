@@ -3,6 +3,7 @@ import User from '../components/User'
 import userService from '../services/users'
 import { BrowserRouter as Router, Route, Link, NavLink, Redirect } from 'react-router-dom'
 import { Container, Table } from 'semantic-ui-react'
+// @flow
 
 class Users extends React.Component {
   constructor() {
@@ -30,7 +31,7 @@ class Users extends React.Component {
         
         <Router>
         <div>
-          <Route exact path = "/users/:id" render = {({match}) => <User.Userview key = {match.params.id} user = {this.userById(match.params.id)} />} />
+          <Route exact path = "/users/:id" render = {({match}) => <User.User key = {match.params.id} user = {this.userById(match.params.id)} />} />
 
           <p>Näkymään päästään klikkaamalla nimeä kaikkien käyttäjien näkymästä</p>
           

@@ -1,4 +1,5 @@
 import axios from 'axios'
+// @flow
 const baseUrl = '/api/login'
 
 const login = async (credentials) => {
